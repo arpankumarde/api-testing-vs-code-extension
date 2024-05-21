@@ -44,10 +44,15 @@ async function activate(context) {
         console.log(apis);
         for (let i = 0; i < apis.length; i++) {
           let api = apis[i];
-          let status = await getStatus(api);
+          let { sts, stsText } = await getStatus(api);
           apiResults = [
             ...apiResults,
-            { endpoint: api.endpoint, status: status },
+            {
+              endpoint: api.endpoint.toUpperCase(),
+              method: api.method,
+              status: sts,
+              statusText: stsText,
+            },
           ];
         }
         showResults(apiResults);
@@ -125,23 +130,25 @@ const getStatus = async (api) => {
   //   return "Invalid Method";
   // }
   let sts = 0;
-  const ak = await axios({
+  let stsText = "";
+  await axios({
     method: method,
     url: endpoint,
-    ...request_headers,
     data: request_body,
+    headers: request_headers,
   })
     .then((response) => {
       // console.log(response.status);
       sts = response.status;
-      // console.log(" ", ak);
+      stsText = response.statusText;
     })
     .catch((error) => {
       // console.error(error.response.status);
       sts = error.response.status;
+      stsText = error.response.statusText;
     });
 
-  return sts;
+  return { sts, stsText };
 };
 
 const showResults = (apiResults) => {
@@ -291,15 +298,19 @@ const showResults = (apiResults) => {
               <summary>Detailed Results</summary>
               <table>
                 <tr>
+                    <th>Method</th>
                     <th>Endpoint</th>
                     <th>Status</th>
+                    <th>Message</th>
                 </tr>
                 ${apiResults
                   .map(
                     (api) =>
                       `<tr>
-                  <td>${api.endpoint}</td>
-                  <td>${api.status}</td>
+                  <td>${api?.method}</td>
+                  <td>${api?.endpoint}</td>
+                  <td>${api?.status}</td>
+                  <td>${api?.statusText}</td>
                     </tr>`
                   )
                   .join("")}
