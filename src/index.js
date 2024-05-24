@@ -307,10 +307,10 @@ const showResults = (apiResults) => {
                   .map(
                     (api) =>
                       `<tr>
-                  <td>${api?.method}</td>
-                  <td>${api?.endpoint}</td>
-                  <td>${api?.status}</td>
-                  <td>${api?.statusText}</td>
+                  <td>${api.method}</td>
+                  <td>${api.endpoint}</td>
+                  <td>${api.status}</td>
+                  <td>${api.statusText}</td>
                     </tr>`
                   )
                   .join("")}
